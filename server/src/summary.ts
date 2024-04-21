@@ -1,4 +1,4 @@
-import summarize from "./openai";
+import summarize from "./openai.ts";
 
 const generateSummary = (contributions: any) => {
     let summaryTmpl = `

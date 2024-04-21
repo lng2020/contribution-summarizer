@@ -1,6 +1,6 @@
 import express from 'express';
 import { graphql, GraphQlQueryResponseData, GraphqlResponseError } from "@octokit/graphql";
-import generateSummary from './summary';
+import generateSummary from './summary.ts';
 
 const router = express.Router();
 

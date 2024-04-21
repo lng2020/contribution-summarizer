@@ -1,15 +1,73 @@
 import express from 'express';
-import axios from 'axios';
-import openai from './openai';
+import { graphql, GraphQlQueryResponseData, GraphqlResponseError } from "@octokit/graphql";
 
 const router = express.Router();
 
 router.post('/generate-summary', async (req, res) => {
   try {
     const { username, starNumbers, contributionType, timeRange, excludeRepos, includeRepos } = req.body;
-    // TODO: Fetch user contributions from the GitHub API based on the provided query conditions
-    // TODO: Process the fetched data and send it to the OpenAI API for summary generation
-    // TODO: Format the generated summary and send it back to the client
+
+    const query = `
+      query($username: String!, $contributionType: [IssueState!], $timeRange: DateTime!) {
+        search(query: "author:$username type:$contributionType created:$timeRange", type: ISSUE, first: 100) {
+          nodes {
+            ... on Issue {
+              title
+              url
+              repository {
+                nameWithOwner
+                stargazerCount
+              }
+            }
+            ... on PullRequest {
+              title
+              url
+              repository {
+                nameWithOwner
+                stargazerCount
+              }
+            }
+          }
+        }
+      }
+    `;
+
+    const processedContributions: GraphQlQueryResponseData = [];
+    try {
+      const response = await graphql(query, {
+        username,
+        contributionType,
+        timeRange,
+      });
+      processedContributions.push(response);
+    } catch (e) {
+      if (e instanceof GraphqlResponseError) {
+        console.error('Error response:', e.response);
+      }
+    }
+
+    // Filter contributions based on starNumbers, excludeRepos, includeRepos
+    for (let i = 0; i < processedContributions.length; i++) {
+      const contribution = processedContributions[i];
+      if (starNumbers) {
+        contribution.nodes = contribution.nodes.filter((node: any) => {
+          return node.repository.stargazerCount >= starNumbers;
+        });
+      }
+      if (excludeRepos) {
+        contribution.nodes = contribution.nodes.filter((node: any) => {
+          return !excludeRepos.includes(node.repository.nameWithOwner);
+        });
+      }
+      if (includeRepos) {
+        contribution.nodes = contribution.nodes.filter((node: any) => {
+          return includeRepos.includes(node.repository.nameWithOwner);
+        });
+      }
+    }
+
+    // Send the processed contributions to the OpenAI API for summary generation
+
     res.status(200).json({ summary: 'Generated summary goes here' });
   } catch (error) {
     console.error('Error generating summary:', error);

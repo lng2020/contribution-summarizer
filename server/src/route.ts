@@ -1,5 +1,6 @@
 import express from 'express';
 import { graphql, GraphQlQueryResponseData, GraphqlResponseError } from "@octokit/graphql";
+import generateSummary from './summary';
 
 const router = express.Router();
 
@@ -46,7 +47,6 @@ router.post('/generate-summary', async (req, res) => {
       }
     }
 
-    // Filter contributions based on starNumbers, excludeRepos, includeRepos
     for (let i = 0; i < processedContributions.length; i++) {
       const contribution = processedContributions[i];
       if (starNumbers) {
@@ -66,9 +66,7 @@ router.post('/generate-summary', async (req, res) => {
       }
     }
 
-    // Send the processed contributions to the OpenAI API for summary generation
-
-    res.status(200).json({ summary: 'Generated summary goes here' });
+    res.status(200).json({ summary: generateSummary(processedContributions)});
   } catch (error) {
     console.error('Error generating summary:', error);
     res.status(500).json({ error: 'An error occurred while generating the summary' });

@@ -1,6 +1,11 @@
+import { METHODS } from 'http';
 import React, { useState } from 'react';
 
-const ContributionForm: React.FC = () => {
+interface ContributionFormProps {
+  onSummaryGenerated: (summary: string) => void;
+}
+
+const ContributionForm: React.FC<ContributionFormProps> = ({onSummaryGenerated}) => {
   const [username, setUsername] = useState('');
   const [starNumbers, setStarNumbers] = useState('');
   const [contributionType, setContributionType] = useState('');
@@ -8,9 +13,27 @@ const ContributionForm: React.FC = () => {
   const [excludeRepos, setExcludeRepos] = useState('');
   const [includeRepos, setIncludeRepos] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Send form data to the back-end API
+    try {
+      const response = await fetch('http://localhost:5000/api/generate-summary', {
+        method: 'POST',
+        body: JSON.stringify({
+        username,
+        starNumbers,
+        contributionType,
+        timeRange,
+        excludeRepos,
+        includeRepos,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    onSummaryGenerated(await response.text());
+    } catch (error) {
+      console.error('Error generating summary:', error);
+    }
   };
 
   return (

@@ -30,46 +30,45 @@ router.post('/generate-summary', async (req, res) => {
       }
     }`;
 
-    const processedContributions: GraphQlQueryResponseData = [];
+    let results: contributionByRepository[]; 
     try {
       const response = await graphql(query, {
         username: username,
         headers: {
           authorization: `token dummy_token`,
         }
-      });
-      processedContributions.push(response);
+      }) as GraphQlQueryResponseData;
+      results = response.user.contributionsCollection.pullRequestContributionsByRepository;
     } catch (e) {
-      console.error('Error fetching contributions:', e);
+      throw new Error('Error fetching data from GitHub');
     }
 
-    const result = processedContributions[0].user.contributionsCollection.pullRequestContributionsByRepository;
-    const filteredResult = result.filter((repo: any) => {
-      const repoName = repo.repository.name;
+    const filteredResults = results.filter((result: contributionByRepository) => {
+      const repoName = result.repository.name;
       if (excludeRepos && excludeRepos.includes(repoName)) {
         return false;
       }
       if (includeRepos && !includeRepos.includes(repoName)) {
         return false;
       }
-      if (starNumbers && repo.repository.stargazerCount < starNumbers) {
+      if (starNumbers && result.repository.stargazerCount < starNumbers) {
         return false;
       }
       return true;
     });
-    const contributions = filteredResult.map((repo: any) => {
-      return repo.contributions.nodes.map((contribution: any) => {
+
+    const contributions = filteredResults.map((result: contributionByRepository) => {
+      return result.contributions.nodes.map((node: node) => {
         return {
-          title: contribution.pullRequest.title,
-          description: contribution.pullRequest.body,
+          title: node.pullRequest.title,
+          description: node.pullRequest.body,
         };
       });
     });
-    console.log('Contributions:', contributions);
+
     res.status(200).json({ summary: generateSummary(contributions)});
   } catch (error) {
-    console.error('Error generating summary:', error);
-    res.status(500).json({ error: 'An error occurred while generating the summary' });
+    throw new Error('Error generating summary');
   }
 });
 

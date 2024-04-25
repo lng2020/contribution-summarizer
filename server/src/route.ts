@@ -9,64 +9,64 @@ router.post('/generate-summary', async (req, res) => {
     const { username, starNumbers, contributionType, timeRange, excludeRepos, includeRepos } = req.body;
 
     const query = `
-      query($username: String!, $contributionType: [IssueState!], $timeRange: DateTime!) {
-        search(query: "author:$username type:$contributionType created:$timeRange", type: ISSUE, first: 100) {
-          nodes {
-            ... on Issue {
-              title
-              url
-              repository {
-                nameWithOwner
-                stargazerCount
+    query($username: String!) {
+      user(login: $username) {
+        contributionsCollection {
+          pullRequestContributionsByRepository{
+            contributions(first: 100) {
+              nodes {
+                pullRequest {
+                  title
+                  body
+                  createdAt
+                }
               }
             }
-            ... on PullRequest {
-              title
-              url
-              repository {
-                nameWithOwner
-                stargazerCount
-              }
+            repository {
+              stargazerCount
             }
           }
         }
       }
-    `;
+    }`;
 
     const processedContributions: GraphQlQueryResponseData = [];
     try {
       const response = await graphql(query, {
-        username,
-        contributionType,
-        timeRange,
+        username: username,
+        headers: {
+          authorization: `token dummy_token`,
+        }
       });
       processedContributions.push(response);
     } catch (e) {
-      if (e instanceof GraphqlResponseError) {
-        console.error('Error response:', e.response);
-      }
+      console.error('Error fetching contributions:', e);
     }
 
-    for (let i = 0; i < processedContributions.length; i++) {
-      const contribution = processedContributions[i];
-      if (starNumbers) {
-        contribution.nodes = contribution.nodes.filter((node: any) => {
-          return node.repository.stargazerCount >= starNumbers;
-        });
+    const result = processedContributions[0].user.contributionsCollection.pullRequestContributionsByRepository;
+    const filteredResult = result.filter((repo: any) => {
+      const repoName = repo.repository.name;
+      if (excludeRepos && excludeRepos.includes(repoName)) {
+        return false;
       }
-      if (excludeRepos) {
-        contribution.nodes = contribution.nodes.filter((node: any) => {
-          return !excludeRepos.includes(node.repository.nameWithOwner);
-        });
+      if (includeRepos && !includeRepos.includes(repoName)) {
+        return false;
       }
-      if (includeRepos) {
-        contribution.nodes = contribution.nodes.filter((node: any) => {
-          return includeRepos.includes(node.repository.nameWithOwner);
-        });
+      if (starNumbers && repo.repository.stargazerCount < starNumbers) {
+        return false;
       }
-    }
-
-    res.status(200).json({ summary: generateSummary(processedContributions)});
+      return true;
+    });
+    const contributions = filteredResult.map((repo: any) => {
+      return repo.contributions.nodes.map((contribution: any) => {
+        return {
+          title: contribution.pullRequest.title,
+          description: contribution.pullRequest.body,
+        };
+      });
+    });
+    console.log('Contributions:', contributions);
+    res.status(200).json({ summary: generateSummary(contributions)});
   } catch (error) {
     console.error('Error generating summary:', error);
     res.status(500).json({ error: 'An error occurred while generating the summary' });

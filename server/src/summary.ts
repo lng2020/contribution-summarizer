@@ -1,14 +1,14 @@
 import summarize from "./openai.ts";
 
-const generateSummary = (contributions: any) => {
+const generateSummary = (contributionByRepo: repoContribution[]) => {
     let summaryTmpl = `
 ## Contribution Summary
 `;
-    for (let i = 0; i < contributions.length; i++) {
-        const contribution = contributions[i];
-        const summarizedContent = summarize(contribution);
+    for (let i = 0; i < contributionByRepo.length; i++) {
+        const contribution = contributionByRepo[i];
+        const summarizedContent = summarize(contribution.contributions);
         summaryTmpl += `
-### ${contribution.title}
+### ${contribution.repository.name}
 ${summarizedContent}
 `;
     }

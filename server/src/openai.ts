@@ -10,13 +10,13 @@ I will provide you GitHub PR/Issue title and description.
 You should summarize this GitHub contribution into 2~3 sentence.
 `
 
-const summarize = async (contributions: any) => {
+const summarize = async (contributions: contribution[]) => {
     const prompt = contributions.map((contribution: any) => {
         return `Title: ${contribution.title}\nDescription: ${contribution.description}\n`;
     }).join('\n');
     
     const response = await openai.chat.completions.create({
-        model: 'davinci',
+        model: 'gpt-4',
         messages: [
             {
                 role: 'system',
@@ -28,7 +28,6 @@ const summarize = async (contributions: any) => {
             },
         ],
     });
-    // console.log(response.choices[0].message.content);
     return response.choices[0].message.content;
 }
 

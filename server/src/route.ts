@@ -32,12 +32,11 @@ router.post('/generate-summary', async (req, res) => {
 
     let results: contributionByRepository[]; 
     try {
-      // retrive GITHUB_TOKEN
       const gh_token = process.env.GITHUB_TOKEN
       const response = await graphql(query, {
         username: username,
         headers: {
-          authorization: "bearer"+gh_token
+          authorization: "bearer "+gh_token
         }
       }) as GraphQlQueryResponseData;
       results = response.user.contributionsCollection.pullRequestContributionsByRepository;
@@ -60,17 +59,28 @@ router.post('/generate-summary', async (req, res) => {
     });
 
     const contributions = filteredResults.map((result: contributionByRepository) => {
-      return result.contributions.nodes.map((node: node) => {
-        return {
-          title: node.pullRequest.title,
-          description: node.pullRequest.body,
-        };
-      });
+      return {
+        repository: result.repository,
+        contributions: result.contributions.nodes.map((node: node) => {
+          return {
+            title: node.pullRequest.title,
+            description: node.pullRequest.body
+          }
+        })
+      } as repoContribution;
     });
 
-    res.status(200).json({ summary: generateSummary(contributions)});
+    let summary;
+    try {
+      summary = generateSummary(contributions)
+    }catch (e) {
+      throw new Error('Error generating summary');
+    }
+
+    res.status(200).json({ summary: summary});
   } catch (error) {
-    throw new Error('Error generating summary');
+    console.error(error);
+    res.status(500).json({ error: error });
   }
 });
 

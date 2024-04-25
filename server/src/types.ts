@@ -3,6 +3,11 @@ interface contribution {
     description: String
 }
 
+interface repoContribution {
+    repository: repository
+    contributions: contribution[]
+}
+
 interface pullRequest {
     title: String
     body: String

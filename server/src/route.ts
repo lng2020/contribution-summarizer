@@ -1,5 +1,5 @@
 import express from 'express';
-import { graphql, GraphQlQueryResponseData, GraphqlResponseError } from "@octokit/graphql";
+import { graphql, GraphQlQueryResponseData} from "@octokit/graphql";
 import generateSummary from './summary.ts';
 
 const router = express.Router();
@@ -32,10 +32,12 @@ router.post('/generate-summary', async (req, res) => {
 
     let results: contributionByRepository[]; 
     try {
+      // retrive GITHUB_TOKEN
+      const gh_token = process.env.GITHUB_TOKEN
       const response = await graphql(query, {
         username: username,
         headers: {
-          authorization: `token dummy_token`,
+          authorization: "bearer"+gh_token
         }
       }) as GraphQlQueryResponseData;
       results = response.user.contributionsCollection.pullRequestContributionsByRepository;

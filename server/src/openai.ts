@@ -1,7 +1,8 @@
 import OpenAI from 'openai';
 
 const openai = new OpenAI({
-    apiKey: 'MyOpenAIKey',
+    apiKey: process.env.OPENAI_TOKEN,
+    baseURL: process.env.OPENAI_PROXY ? process.env.OPENAI_PROXY : undefined,
 });
 
 const promptTmpl = `

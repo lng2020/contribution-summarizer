@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post('/generate-summary', async (req, res) => {
   try {
-    const { username, starNumbers, timeRange, excludeRepos, includeRepos } = req.body;
+    const { username, starNumbers, date, excludeRepos, includeRepos } = req.body;
 
     const query = `
     query($username: String!) {
@@ -64,8 +64,8 @@ router.post('/generate-summary', async (req, res) => {
         contributions: result.contributions.nodes
           .filter((node: node) => {
             const createdAt = new Date(node.pullRequest.createdAt);
-            const timeRangeDate = new Date(timeRange);
-            return createdAt > timeRangeDate;
+            const dateDate = new Date(date);
+            return createdAt > dateDate;
           })
           .map((node: node) => {
             return {
@@ -76,13 +76,7 @@ router.post('/generate-summary', async (req, res) => {
       } as repoContribution;
     });
 
-    let summary;
-    try {
-      summary = generateSummary(contributions);
-    } catch (e) {
-      throw new Error('Error generating summary');
-    }
-
+    const summary = await generateSummary(contributions);
     res.status(200).json({ summary: summary });
   } catch (error) {
     console.error(error);

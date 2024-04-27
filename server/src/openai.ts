@@ -11,6 +11,7 @@ You should summarize this GitHub contribution into 2~3 sentence.
 `;
 
 const summarize = async (contributions: contribution[]) => {
+  console.log(contributions);
   const prompt = contributions
     .map((contribution: contribution) => {
       return `Title: ${contribution.title}\nDescription: ${contribution.description}\n`;
@@ -30,6 +31,7 @@ const summarize = async (contributions: contribution[]) => {
       },
     ],
   });
+  console.log(response.choices[0].message.content);
   return response.choices[0].message.content;
 };
 

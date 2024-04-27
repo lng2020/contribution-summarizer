@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import ReactMarkdown from 'react-markdown';
+import Markdown from 'react-markdown';
 
 interface SummaryDisplayProps {
   summary: string;
@@ -35,7 +35,7 @@ const SummaryDisplay: React.FC<SummaryDisplayProps> = ({ summary, isGenerating, 
           {isGenerating ? 'Generating...' : 'Generate Again'}
         </button>
       </div>
-      {mode === 'preview' ? <ReactMarkdown>{summary}</ReactMarkdown> : <pre>{summary}</pre>}
+      {mode === 'preview' ? <Markdown className="prose">{summary}</Markdown> : <pre>{summary}</pre>}
     </div>
   );
 };

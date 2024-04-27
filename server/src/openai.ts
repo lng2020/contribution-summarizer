@@ -12,7 +12,7 @@ You should summarize this GitHub contribution into 2~3 sentence.
 
 const summarize = async (contributions: contribution[]) => {
   const prompt = contributions
-    .map((contribution: any) => {
+    .map((contribution: contribution) => {
       return `Title: ${contribution.title}\nDescription: ${contribution.description}\n`;
     })
     .join('\n');

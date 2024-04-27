@@ -1,31 +1,31 @@
 interface contribution {
-    title: String
-    description: String
+  title: string;
+  description: string;
 }
 
 interface repoContribution {
-    repository: repository
-    contributions: contribution[]
+  repository: repository;
+  contributions: contribution[];
 }
 
 interface pullRequest {
-    title: String
-    body: String
-    createdAt: String
+  title: string;
+  body: string;
+  createdAt: string;
 }
 
 interface node {
-    pullRequest: pullRequest
+  pullRequest: pullRequest;
 }
 
 interface repository {
-    name: String
-    stargazerCount: Number
+  name: string;
+  stargazerCount: number;
 }
 
 interface contributionByRepository {
-    repository: repository
-    contributions: {
-        nodes: node[]
-    }
+  repository: repository;
+  contributions: {
+    nodes: node[];
+  };
 }

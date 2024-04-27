@@ -1,5 +1,5 @@
 import express from 'express';
-import { graphql, GraphQlQueryResponseData} from "@octokit/graphql";
+import { graphql, GraphQlQueryResponseData } from '@octokit/graphql';
 import generateSummary from './summary.ts';
 
 const router = express.Router();
@@ -30,15 +30,15 @@ router.post('/generate-summary', async (req, res) => {
       }
     }`;
 
-    let results: contributionByRepository[]; 
+    let results: contributionByRepository[];
     try {
-      const gh_token = process.env.GITHUB_TOKEN
-      const response = await graphql(query, {
+      const gh_token = process.env.GITHUB_TOKEN;
+      const response = (await graphql(query, {
         username: username,
         headers: {
-          authorization: "bearer "+gh_token
-        }
-      }) as GraphQlQueryResponseData;
+          authorization: 'bearer ' + gh_token,
+        },
+      })) as GraphQlQueryResponseData;
       results = response.user.contributionsCollection.pullRequestContributionsByRepository;
     } catch (e) {
       throw new Error('Error fetching data from GitHub');
@@ -64,20 +64,20 @@ router.post('/generate-summary', async (req, res) => {
         contributions: result.contributions.nodes.map((node: node) => {
           return {
             title: node.pullRequest.title,
-            description: node.pullRequest.body
-          }
-        })
+            description: node.pullRequest.body,
+          };
+        }),
       } as repoContribution;
     });
 
     let summary;
     try {
-      summary = generateSummary(contributions)
-    }catch (e) {
+      summary = generateSummary(contributions);
+    } catch (e) {
       throw new Error('Error generating summary');
     }
 
-    res.status(200).json({ summary: summary});
+    res.status(200).json({ summary: summary });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: error });

@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post('/generate-summary', async (req, res) => {
   try {
-    const { username, starNumbers, contributionType, timeRange, excludeRepos, includeRepos } = req.body;
+    const { username, starNumbers, timeRange, excludeRepos, includeRepos } = req.body;
 
     const query = `
     query($username: String!) {
@@ -61,12 +61,18 @@ router.post('/generate-summary', async (req, res) => {
     const contributions = filteredResults.map((result: contributionByRepository) => {
       return {
         repository: result.repository,
-        contributions: result.contributions.nodes.map((node: node) => {
-          return {
-            title: node.pullRequest.title,
-            description: node.pullRequest.body,
-          };
-        }),
+        contributions: result.contributions.nodes
+          .filter((node: node) => {
+            const createdAt = new Date(node.pullRequest.createdAt);
+            const timeRangeDate = new Date(timeRange);
+            return createdAt > timeRangeDate;
+          })
+          .map((node: node) => {
+            return {
+              title: node.pullRequest.title,
+              description: node.pullRequest.body,
+            };
+          }),
       } as repoContribution;
     });
 

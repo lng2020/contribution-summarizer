@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 interface ContributionFormProps {
   onSummaryGenerated: (summary: string) => void;
@@ -7,10 +9,13 @@ interface ContributionFormProps {
 const ContributionForm: React.FC<ContributionFormProps> = ({ onSummaryGenerated }) => {
   const [username, setUsername] = useState('');
   const [starNumbers, setStarNumbers] = useState('');
-  const [contributionType, setContributionType] = useState('');
-  const [timeRange, setTimeRange] = useState('');
+  const [date, setDate] = useState(new Date());
   const [excludeRepos, setExcludeRepos] = useState('');
   const [includeRepos, setIncludeRepos] = useState('');
+
+  const handleDateChange = (newDate: Date) => {
+    setDate(newDate);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,8 +25,7 @@ const ContributionForm: React.FC<ContributionFormProps> = ({ onSummaryGenerated 
         body: JSON.stringify({
           username,
           starNumbers,
-          contributionType,
-          timeRange,
+          date: date ? date.toISOString() : null,
           excludeRepos,
           includeRepos,
         }),
@@ -64,32 +68,13 @@ const ContributionForm: React.FC<ContributionFormProps> = ({ onSummaryGenerated 
         />
       </div>
       <div className="mb-4">
-        <label className="block text-gray-700 font-bold mb-2" htmlFor="contributionType">
-          Contribution Type
-        </label>
-        <select
+        <label className="block text-gray-700 font-bold mb-2">Date</label>
+        <DatePicker
           className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          id="contributionType"
-          value={contributionType}
-          onChange={(e) => setContributionType(e.target.value)}
-        >
-          <option value="">Select Contribution Type</option>
-          <option value="commits">Commits</option>
-          <option value="issues">Issues</option>
-          <option value="pullRequests">Pull Requests</option>
-        </select>
-      </div>
-      <div className="mb-4">
-        <label className="block text-gray-700 font-bold mb-2" htmlFor="timeRange">
-          Time Range
-        </label>
-        <input
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          id="timeRange"
-          type="text"
-          placeholder="Enter time range (e.g., last year, last 6 months)"
-          value={timeRange}
-          onChange={(e) => setTimeRange(e.target.value)}
+          selected={date}
+          onChange={handleDateChange}
+          dateFormat="yyyy-MM-dd"
+          placeholderText="Select a date"
         />
       </div>
       <div className="mb-4">

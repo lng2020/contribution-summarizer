@@ -23,6 +23,7 @@ router.post('/generate-summary', async (req, res) => {
               }
             }
             repository {
+              name
               stargazerCount
             }
           }
@@ -58,23 +59,25 @@ router.post('/generate-summary', async (req, res) => {
       return true;
     });
 
-    const contributions = filteredResults.map((result: contributionByRepository) => {
-      return {
-        repository: result.repository,
-        contributions: result.contributions.nodes
-          .filter((node: node) => {
-            const createdAt = new Date(node.pullRequest.createdAt);
-            const dateDate = new Date(date);
-            return createdAt > dateDate;
-          })
-          .map((node: node) => {
-            return {
-              title: node.pullRequest.title,
-              description: node.pullRequest.body,
-            };
-          }),
-      } as repoContribution;
-    });
+    const contributions = filteredResults
+      .map((result: contributionByRepository) => {
+        return {
+          repository: result.repository,
+          contributions: result.contributions.nodes
+            .filter((node: node) => {
+              const createdAt = new Date(node.pullRequest.createdAt);
+              const dateDate = new Date(date);
+              return createdAt > dateDate;
+            })
+            .map((node: node) => {
+              return {
+                title: node.pullRequest.title,
+                description: node.pullRequest.body,
+              };
+            }),
+        } as repoContribution;
+      })
+      .filter((contribution: repoContribution) => contribution.contributions.length > 0);
 
     await generateSummary(contributions, res);
   } catch (error) {

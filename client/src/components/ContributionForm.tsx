@@ -20,6 +20,8 @@ const ContributionForm: React.FC<ContributionFormProps> = ({ onSummaryGenerated 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    onSummaryGenerated('');
+
     try {
       const response = await fetch('http://localhost:5000/api/generate-summary', {
         method: 'POST',

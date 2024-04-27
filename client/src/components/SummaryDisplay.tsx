@@ -1,17 +1,25 @@
-import React from 'react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
 
 interface SummaryDisplayProps {
   summary: string;
 }
 
 const SummaryDisplay: React.FC<SummaryDisplayProps> = ({ summary }) => {
-  const [streamedSummary, setStreamedSummary] = useState('');
+  const [displayedSummary, setDisplayedSummary] = useState<string>('');
 
   useEffect(() => {
+    setDisplayedSummary('');
+
+    let currentIndex = 0;
+
     const interval = setInterval(() => {
-      setStreamedSummary((prevSummary) => prevSummary + summary.slice(0, 1));
-      summary = summary.slice(1);
+      if (currentIndex < summary.length) {
+        setDisplayedSummary((prevSummary) => prevSummary + summary.slice(currentIndex, currentIndex + 10));
+        currentIndex += 10;
+      } else {
+        clearInterval(interval);
+      }
     }, 50);
 
     return () => clearInterval(interval);
@@ -20,7 +28,7 @@ const SummaryDisplay: React.FC<SummaryDisplayProps> = ({ summary }) => {
   return (
     <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 w-full max-w-lg">
       <h2 className="text-2xl font-bold mb-4">Generated Summary</h2>
-      <p className="text-gray-700">{streamedSummary}</p>
+      <ReactMarkdown>{displayedSummary}</ReactMarkdown>
     </div>
   );
 };

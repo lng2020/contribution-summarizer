@@ -1,18 +1,19 @@
+import { Response } from 'express';
 import summarize from './openai.ts';
 
-const generateSummary = async (contributionByRepo: repoContribution[]) => {
-  let summaryTmpl = `
-## Contribution Summary
-`;
+const generateSummary = async (contributionByRepo: repoContribution[], res: Response) => {
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+  res.setHeader('Transfer-Encoding', 'chunked');
+
+  res.write('## Contribution Summary\n');
+
   for (let i = 0; i < contributionByRepo.length; i++) {
     const contribution = contributionByRepo[i];
     const summarizedContent = await summarize(contribution.contributions);
-    summaryTmpl += `
-### ${contribution.repository.name}
-${summarizedContent}
-`;
+    res.write(`\n### ${contribution.repository.name}\n${summarizedContent}\n`);
   }
-  return summaryTmpl;
+
+  res.end();
 };
 
 export default generateSummary;

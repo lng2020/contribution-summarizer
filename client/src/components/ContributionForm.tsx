@@ -19,6 +19,7 @@ const ContributionForm: React.FC<ContributionFormProps> = ({ onSummaryGenerated 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     try {
       const response = await fetch('http://localhost:5000/api/generate-summary', {
         method: 'POST',
@@ -33,9 +34,27 @@ const ContributionForm: React.FC<ContributionFormProps> = ({ onSummaryGenerated 
           'Content-Type': 'application/json',
         },
       });
-      onSummaryGenerated(await response.text());
+
+      if (!response.body) {
+        throw new Error('No response body');
+      }
+
+      const reader = response.body.getReader();
+      let summary = '';
+
+      for (;;) {
+        const { done, value } = await reader.read();
+
+        if (done) {
+          break;
+        }
+
+        const chunk = new TextDecoder().decode(value);
+        summary += chunk;
+        onSummaryGenerated(summary);
+      }
     } catch (error) {
-      throw new Error(`Failed to generate summary`);
+      throw new Error(`Failed to generate summary: ${error}`);
     }
   };
 

@@ -35,7 +35,7 @@ const ContributionForm: React.FC<ContributionFormProps> = ({ onSummaryGenerated 
       });
       onSummaryGenerated(await response.text());
     } catch (error) {
-      console.error('Error generating summary:', error);
+      throw new Error(`Failed to generate summary`);
     }
   };
 

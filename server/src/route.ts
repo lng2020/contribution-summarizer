@@ -79,7 +79,6 @@ router.post('/generate-summary', async (req, res) => {
     const summary = await generateSummary(contributions);
     res.status(200).json({ summary: summary });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ error: error });
   }
 });

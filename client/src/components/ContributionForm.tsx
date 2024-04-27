@@ -4,9 +4,11 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 interface ContributionFormProps {
   onSummaryGenerated: (summary: string) => void;
+  isGenerating: boolean;
+  setIsGenerating: (isGenerating: boolean) => void;
 }
 
-const ContributionForm: React.FC<ContributionFormProps> = ({ onSummaryGenerated }) => {
+const ContributionForm: React.FC<ContributionFormProps> = ({ onSummaryGenerated, isGenerating, setIsGenerating }) => {
   const [username, setUsername] = useState('');
   const [starNumbers, setStarNumbers] = useState('');
   const [date, setDate] = useState(new Date());
@@ -20,7 +22,7 @@ const ContributionForm: React.FC<ContributionFormProps> = ({ onSummaryGenerated 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    onSummaryGenerated('');
+    setIsGenerating(true);
 
     try {
       const response = await fetch('http://localhost:5000/api/generate-summary', {
@@ -42,7 +44,6 @@ const ContributionForm: React.FC<ContributionFormProps> = ({ onSummaryGenerated 
       }
 
       const reader = response.body.getReader();
-      let summary = '';
 
       for (;;) {
         const { done, value } = await reader.read();
@@ -52,11 +53,12 @@ const ContributionForm: React.FC<ContributionFormProps> = ({ onSummaryGenerated 
         }
 
         const chunk = new TextDecoder().decode(value);
-        summary += chunk;
-        onSummaryGenerated(summary);
+        onSummaryGenerated(chunk);
       }
     } catch (error) {
       throw new Error(`Failed to generate summary: ${error}`);
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -125,8 +127,9 @@ const ContributionForm: React.FC<ContributionFormProps> = ({ onSummaryGenerated 
       <button
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
         type="submit"
+        disabled={isGenerating}
       >
-        Generate Summary
+        {isGenerating ? 'Generating...' : 'Generate Summary'}
       </button>
     </form>
   );

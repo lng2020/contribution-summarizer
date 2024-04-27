@@ -1,30 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 
 interface SummaryDisplayProps {
   summary: string;
+  isGenerating: boolean;
+  resetSummary: () => void;
 }
 
-const SummaryDisplay: React.FC<SummaryDisplayProps> = ({ summary }) => {
-  const [displayedSummary, setDisplayedSummary] = useState<string>('');
+const SummaryDisplay: React.FC<SummaryDisplayProps> = ({ summary, isGenerating, resetSummary }) => {
   const [mode, setMode] = useState<'preview' | 'raw'>('preview');
 
-  useEffect(() => {
-    setDisplayedSummary('');
-
-    let currentIndex = 0;
-
-    const interval = setInterval(() => {
-      if (currentIndex < summary.length) {
-        setDisplayedSummary((prevSummary) => prevSummary + summary.slice(currentIndex, currentIndex + 10));
-        currentIndex += 10;
-      } else {
-        clearInterval(interval);
-      }
-    }, 50);
-
-    return () => clearInterval(interval);
-  }, [summary]);
+  const handleGenerateAgain = () => {
+    if (!isGenerating) {
+      resetSummary();
+    }
+  };
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(summary);
@@ -41,8 +31,11 @@ const SummaryDisplay: React.FC<SummaryDisplayProps> = ({ summary }) => {
           Raw
         </button>
         <button onClick={copyToClipboard}>Copy</button>
+        <button onClick={handleGenerateAgain} disabled={isGenerating}>
+          {isGenerating ? 'Generating...' : 'Generate Again'}
+        </button>
       </div>
-      {mode === 'preview' ? <ReactMarkdown>{displayedSummary}</ReactMarkdown> : <pre>{displayedSummary}</pre>}
+      {mode === 'preview' ? <ReactMarkdown>{summary}</ReactMarkdown> : <pre>{summary}</pre>}
     </div>
   );
 };

@@ -10,10 +10,14 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-8">
-      <h1 className="text-4xl font-bold mb-8">GitHub Contribution Summary</h1>
-      <ContributionForm onSummaryGenerated={handleSummaryGenerated} />
-      <SummaryDisplay summary={summary} />
+    <div className="flex min-h-screen">
+      <div className="w-1/3 bg-gray-100 p-8">
+        <h1 className="text-4xl font-bold mb-8">GitHub Contribution Summary</h1>
+        <ContributionForm onSummaryGenerated={handleSummaryGenerated} />
+      </div>
+      <div className="w-2/3 p-8">
+        <SummaryDisplay summary={summary} />
+      </div>
     </div>
   );
 };

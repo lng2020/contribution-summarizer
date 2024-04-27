@@ -7,6 +7,7 @@ interface SummaryDisplayProps {
 
 const SummaryDisplay: React.FC<SummaryDisplayProps> = ({ summary }) => {
   const [displayedSummary, setDisplayedSummary] = useState<string>('');
+  const [mode, setMode] = useState<'preview' | 'raw'>('preview');
 
   useEffect(() => {
     setDisplayedSummary('');
@@ -25,10 +26,23 @@ const SummaryDisplay: React.FC<SummaryDisplayProps> = ({ summary }) => {
     return () => clearInterval(interval);
   }, [summary]);
 
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(summary);
+  };
+
   return (
-    <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 w-full max-w-lg">
+    <div className="bg-white shadow-md rounded px-8 pt-6 pb-8">
       <h2 className="text-2xl font-bold mb-4">Generated Summary</h2>
-      <ReactMarkdown>{displayedSummary}</ReactMarkdown>
+      <div className="mb-4">
+        <button className={`mr-4 ${mode === 'preview' ? 'font-bold' : ''}`} onClick={() => setMode('preview')}>
+          Preview
+        </button>
+        <button className={`mr-4 ${mode === 'raw' ? 'font-bold' : ''}`} onClick={() => setMode('raw')}>
+          Raw
+        </button>
+        <button onClick={copyToClipboard}>Copy</button>
+      </div>
+      {mode === 'preview' ? <ReactMarkdown>{displayedSummary}</ReactMarkdown> : <pre>{displayedSummary}</pre>}
     </div>
   );
 };

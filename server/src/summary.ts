@@ -5,11 +5,10 @@ const generateSummary = async (contributionByRepo: repoContribution[], res: Resp
   res.setHeader('Content-Type', 'text/plain; charset=utf-8');
   res.setHeader('Transfer-Encoding', 'chunked');
 
-  res.write(`## GitHub Contribution Summary\n`);
   for (let i = 0; i < contributionByRepo.length; i++) {
     const contribution = contributionByRepo[i];
     const summarizedContent = await summarize(contribution.contributions);
-    res.write(`\n### ${contribution.repository.name}\n${summarizedContent}\n`);
+    res.write(`## ${contribution.repository.name}\n${summarizedContent}\n`);
   }
 
   res.end();

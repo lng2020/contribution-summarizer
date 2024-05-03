@@ -8,6 +8,11 @@ Using GitHub GraphQL API to fetch the contributions and then using AI to summari
 - **include**: Include repositories with the given keyword
 - **exclude**: Exclude repositories with the given keyword
 ## Usage
+1. setup your env
+- `GITHUB_TOKEN`
+- `OPENAI_TOKEN`
+- `OPENAI_PROXY`: optional
+2. 
 ```bash
 pnpm install
 pnpm run dev
@@ -19,3 +24,5 @@ pnpm run dev
 - [ ] online demo and vercel deployment
 - [ ] self-define prompt
 - [ ] pagination support
+- [ ] (maybe) more LLM summarizers support
+- [ ] (maybe) more Git providers support

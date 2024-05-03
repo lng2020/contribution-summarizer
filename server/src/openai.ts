@@ -6,20 +6,26 @@ const openai = new OpenAI({
 });
 
 const promptTmpl = `
-I will provide you with a list of GitHub pull requests (PRs) or issues, each including a title and description. Your task is to summarize each contribution described in these PRs or issues in a single concise sentence, and format the summaries as a Markdown list.
+I will provide you with a list of GitHub pull requests (PRs) or issues, each including a title and description. Your task is to first list each contribution by its title, and then provide a focused summary highlighting the common technical area, primary goals, and relevance of the contributions for potential job providers and readers of your GitHub profile.
 
-When summarizing a contribution, please focus on the main purpose or objective of the contribution (e.g., fixing a bug, adding a new feature, improving performance, etc.), and briefly mention any specific changes or implementations made to achieve the objective.
+When listing the contributions, please include only the title of each contribution, separated by commas.
 
-Your summaries should be written in a clear, coherent, and easily understandable style. Avoid unnecessary technical jargon or acronyms unless they are essential and explained. The goal is to convey the essence of each contribution in a way that is accessible to both technical and non-technical readers.
+After listing all the contributions, provide a summary that focuses on:
+1. The common technical area or domain the contributions relate to (e.g., security, performance, new features).
+2. How these contributions demonstrate your skills and experience, you should hightlight the keyword using **.
 
-Please format your response as a Markdown list, with each summary as a list item, like this:
+Incorporate relevant keywords or phrases from the contribution titles or descriptions into the summary. Aim for a clear, coherent, and easily understandable writing style while avoiding unnecessary technical jargon or acronyms unless they are essential and explained.
 
-- [Contribution 1 Summary]
-- [Contribution 2 Summary]
-- ...
-- [Contribution N Summary]
+The summary should be limited to 200-300 characters.
 
-Replace the placeholders with your actual summaries, and ensure that each list item starts with a hyphen (-) followed by a space.
+Please format your response like this:
+
+Contributions: [Contribution 1 Title], [Contribution 2 Title], ..., [Contribution N Title]
+
+Summary:
+[Focused summary highlighting the common technical area, primary goals, and relevance for potential job providers and GitHub profile readers]
+
+Replace the placeholders with the actual contribution titles and your focused summary.
 `;
 
 const summarize = async (contributions: contribution[]) => {

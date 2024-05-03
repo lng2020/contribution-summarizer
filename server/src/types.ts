@@ -1,6 +1,7 @@
 interface contribution {
   title: string;
   description: string;
+  permalink: string;
 }
 
 interface repoContribution {
@@ -12,6 +13,7 @@ interface pullRequest {
   title: string;
   body: string;
   createdAt: string;
+  permalink: string;
 }
 
 interface node {
@@ -21,6 +23,7 @@ interface node {
 interface repository {
   name: string;
   stargazerCount: number;
+  url: string;
 }
 
 interface contributionByRepository {

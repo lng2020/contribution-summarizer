@@ -6,32 +6,33 @@ const openai = new OpenAI({
 });
 
 const promptTmpl = `
-I will provide you with a list of GitHub pull requests (PRs) or issues, each including a title and description. Your task is to first list each contribution by its title, and then provide a focused summary highlighting the common technical area, primary goals, and relevance of the contributions for potential job providers and readers of your GitHub profile.
+I will provide you with a GitHub repo information(name, star count, link) and a list of GitHub pull requests (PRs) or issues associated with the repo, each including a title, description, and permalink. Your task is to first list each contribution by its title (with the permalink in the []() format), and then provide a focused summary highlighting the common technical area, primary goals, and relevance of the contributions for potential job providers and readers of your GitHub profile.
 
-When listing the contributions, please include only the title of each contribution, separated by commas.
+When listing the contributions, please include the title of each contribution, followed by the permalink in the []() format, separated by commas.
 
 After listing all the contributions, provide a summary that focuses on:
 1. The common technical area or domain the contributions relate to (e.g., security, performance, new features).
-2. How these contributions demonstrate your skills and experience, you should hightlight the keyword using **.
+2. How these contributions demonstrate your skills and experience, you should highlight the relevant keywords using **.
 
 Incorporate relevant keywords or phrases from the contribution titles or descriptions into the summary. Aim for a clear, coherent, and easily understandable writing style while avoiding unnecessary technical jargon or acronyms unless they are essential and explained.
 
 The summary should be limited to 200-300 characters.
 
 Please format your response like this:
+- [repo name](repo url)
+  - [Contribution 1 Title]([Contribution 1 Permalink]), [Contribution 2 Title]([Contribution 2 Permalink]), ..., [Contribution N Title]([Contribution N Permalink])
+  - [Focused summary highlighting the common technical area, primary goals, and relevance for potential job providers and GitHub profile readers]
 
-Contributions: [Contribution 1 Title], [Contribution 2 Title], ..., [Contribution N Title]
-
-Summary:
-[Focused summary highlighting the common technical area, primary goals, and relevance for potential job providers and GitHub profile readers]
-
-Replace the placeholders with the actual contribution titles and your focused summary.
+Replace the placeholders with the actual contribution titles, permalinks, and your focused summary.
 `;
 
-const summarize = async (contributions: contribution[]) => {
-  const prompt = contributions
+const summarize = async (contributions: repoContribution) => {
+  const repo = contributions.repository;
+  const contributionsList = contributions.contributions;
+  const repoInfo = `Repository: ${repo.name}\nStargazers: ${repo.stargazerCount}\nURL: ${repo.url}\n\n`;
+  const prompt = contributionsList
     .map((contribution: contribution) => {
-      return `Title: ${contribution.title}\nDescription: ${contribution.description}\n`;
+      return `Title: ${contribution.title}\nDescription: ${contribution.description}\nPermalink: ${contribution.permalink}\n`;
     })
     .join('\n');
 
@@ -44,7 +45,7 @@ const summarize = async (contributions: contribution[]) => {
       },
       {
         role: 'user',
-        content: prompt,
+        content: repoInfo + prompt,
       },
     ],
   });

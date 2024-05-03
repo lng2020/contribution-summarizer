@@ -19,12 +19,14 @@ router.post('/generate-summary', async (req, res) => {
                   title
                   body
                   createdAt
+                  permalink
                 }
               }
             }
             repository {
               name
               stargazerCount
+              url
             }
           }
         }
@@ -73,13 +75,14 @@ router.post('/generate-summary', async (req, res) => {
               return {
                 title: node.pullRequest.title,
                 description: node.pullRequest.body,
+                permalink: node.pullRequest.permalink,
               };
             }),
         } as repoContribution;
       })
       .filter((contribution: repoContribution) => contribution.contributions.length > 0);
 
-    await generateSummary(contributions, res);
+    await generateSummary(new Date(date), contributions, res);
   } catch (error) {
     res.status(500).json({ error: error });
   }

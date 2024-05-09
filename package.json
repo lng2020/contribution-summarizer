@@ -11,7 +11,7 @@
     "dev:client": "cd client && vite",
     "dev:server": "cd server && nodemon --watch 'src/**/*.ts' --exec 'node --loader ts-node/esm' src/index.ts",
     "build": "npm run build:client && npm run build:server",
-    "build:client": "cd client && tsc && vite build",
+    "build:client": "cd client && tsc && vite build --outDir dist",
     "build:server": "cd server && tsc",
     "preview": "cd client && vite preview",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx ./client ./server",

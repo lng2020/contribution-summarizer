@@ -35,6 +35,7 @@ router.post('/generate-summary', async (req, res) => {
 
     let results: contributionByRepository[];
     try {
+      console.log('Fetching data from GitHub');
       const gh_token = process.env.GITHUB_TOKEN;
       const response = (await graphql(query, {
         username: username,
@@ -43,10 +44,13 @@ router.post('/generate-summary', async (req, res) => {
         },
       })) as GraphQlQueryResponseData;
       results = response.user.contributionsCollection.pullRequestContributionsByRepository;
+      console.log('Data fetched from GitHub');
     } catch (e) {
-      throw new Error('Error fetching data from GitHub');
+      console.log('Cannot fetch data from GitHub: ', e);
+      return res.status(500).json({ e: 'Cannot fetch data from GitHub: ' + e });
     }
 
+    console.log('Filtering data');
     const filteredResults = results.filter((result: contributionByRepository) => {
       const repoName = result.repository.name;
       if (excludeRepos && excludeRepos.includes(repoName)) {
@@ -82,9 +86,11 @@ router.post('/generate-summary', async (req, res) => {
       })
       .filter((contribution: repoContribution) => contribution.contributions.length > 0);
 
+    console.log('Data filtered, generating summary');
     await generateSummary(new Date(date), contributions, res);
-  } catch (error) {
-    res.status(500).json({ error: error });
+  } catch (e) {
+    console.log('Error while generating summary: ', e);
+    res.status(500).json({ e: 'Error while generating summary: ' + e });
   }
 });
 

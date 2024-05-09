@@ -2,6 +2,8 @@ import { Response } from 'express';
 import summarize from './openai.ts';
 
 const generateSummary = async (date: Date, contributionByRepo: repoContribution[], res: Response) => {
+  console.log('Generating summary');
+
   res.setHeader('Content-Type', 'text/plain; charset=utf-8');
   res.setHeader('Transfer-Encoding', 'chunked');
 
@@ -14,6 +16,7 @@ const generateSummary = async (date: Date, contributionByRepo: repoContribution[
   }
 
   res.end();
+  console.log('Summary generated');
 };
 
 export default generateSummary;

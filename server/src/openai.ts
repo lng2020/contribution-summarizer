@@ -36,6 +36,7 @@ const summarize = async (contributions: repoContribution) => {
     })
     .join('\n');
 
+  console.log('Querying OpenAI to generate summary for repo: ', repo.name);
   const response = await openai.chat.completions.create({
     model: 'gpt-4',
     messages: [
@@ -49,6 +50,7 @@ const summarize = async (contributions: repoContribution) => {
       },
     ],
   });
+  console.log('Summary generated for repo: ', repo.name);
   return response.choices[0].message.content;
 };
 

@@ -18,7 +18,7 @@ const HomePage: React.FC = () => {
   return (
     <div className="flex min-h-screen">
       <div className="w-1/3 bg-gray-100 p-8 overflow-auto">
-        <h1 className="text-4xl font-bold mb-8">GitHub Contribution Summary</h1>
+        <h1 className="text-4xl font-bold mb-8">GitHub Contribution Summarizer</h1>
         <ContributionForm
           onSummaryGenerated={handleSummaryGenerated}
           isGenerating={isGenerating}

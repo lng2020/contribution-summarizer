@@ -6,7 +6,7 @@ const generateSummary = async (date: Date, contributionByRepo: repoContribution[
   res.setHeader('Transfer-Encoding', 'chunked');
 
   res.write(`### Checkout my GitHub contributions from ${date.toDateString()}! `);
-  res.write(`(powered by [my contribution summarizer](https://github.com/lng2020/contribution-summary))\n\n`);
+  res.write(`(powered by [my contribution summarizer](https://github.com/lng2020/contribution-summarizer))\n\n`);
   for (let i = 0; i < contributionByRepo.length; i++) {
     const contribution = contributionByRepo[i];
     const summarizedContent = await summarize(contribution);

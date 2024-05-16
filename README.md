@@ -27,12 +27,16 @@ pnpm install
 pnpm run dev
 ```
 
+## Deploy on your own
+[![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/lng2020/contribution-summarizer)
+
+you should change the build settings of the Vercle project to the image below:
+![vercel-build-settings](./assets/build_config.png)
 ## TODO
 
 - [ ] filter enhancements
   - [ ] add more contribution types
   - [ ] add minimun contributions filter
-- [ ] online demo and vercel deployment
 - [ ] API support
 - [ ] self-define prompt
 - [ ] pagination support
